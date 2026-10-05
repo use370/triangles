@@ -4,9 +4,6 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Triangles",
   description: "Professional networking platform",
-  verification: {
-    google: "0NJhd1AKbFYkmygwh26W1tjN-EdJZKdxgtrNYIFLyqw",
-  },
 };
 
 export default function RootLayout({
@@ -16,6 +13,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta
+          name="google-site-verification"
+          content="0NJhd1AKbFYkmygwh26W1tjN-EdJZKdxgtrNYIFLyqw"
+        />
+      </head>
       <body>{children}</body>
     </html>
   );
