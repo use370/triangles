@@ -10,67 +10,54 @@ import {
 
 type Theme = "light" | "dark";
 
-type ThemeContextType = {
+type ThemeContextValue = {
   theme: Theme;
-  setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
 };
 
-const ThemeContext = createContext<
-  ThemeContextType | undefined
->(undefined);
+const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export default function ThemeProvider({
   children,
 }: {
   children: ReactNode;
 }) {
-  const [theme, setThemeState] =
-    useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-    const saved = localStorage.getItem(
-      "triangles-theme"
-    ) as Theme | null;
+    const savedTheme = localStorage.getItem("triangles-theme");
 
-    const systemDark = window.matchMedia(
+    if (savedTheme === "dark" || savedTheme === "light") {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle(
+        "dark",
+        savedTheme === "dark"
+      );
+      return;
+    }
+
+    const prefersDark = window.matchMedia(
       "(prefers-color-scheme: dark)"
     ).matches;
 
-    const nextTheme: Theme =
-      saved === "dark" || saved === "light"
-        ? saved
-        : systemDark
-          ? "dark"
-          : "light";
+    const initialTheme: Theme = prefersDark ? "dark" : "light";
 
-    setThemeState(nextTheme);
-
+    setTheme(initialTheme);
     document.documentElement.classList.toggle(
       "dark",
-      nextTheme === "dark"
+      initialTheme === "dark"
     );
   }, []);
 
-  function setTheme(nextTheme: Theme) {
-    setThemeState(nextTheme);
+  function toggleTheme() {
+    const nextTheme: Theme = theme === "dark" ? "light" : "dark";
 
-    localStorage.setItem(
-      "triangles-theme",
-      nextTheme
-    );
+    setTheme(nextTheme);
+    localStorage.setItem("triangles-theme", nextTheme);
 
     document.documentElement.classList.toggle(
       "dark",
       nextTheme === "dark"
-    );
-  }
-
-  function toggleTheme() {
-    setTheme(
-      theme === "dark"
-        ? "light"
-        : "dark"
     );
   }
 
@@ -78,7 +65,6 @@ export default function ThemeProvider({
     <ThemeContext.Provider
       value={{
         theme,
-        setTheme,
         toggleTheme,
       }}
     >
@@ -87,10 +73,10 @@ export default function ThemeProvider({
   );
 }
 
-export function useTheme() {
+export function useTheme(): ThemeContextValue {
   const context = useContext(ThemeContext);
 
-  if (!context) {
+  if (context === null) {
     throw new Error(
       "useTheme must be used inside ThemeProvider"
     );

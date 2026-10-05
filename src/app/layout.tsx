@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import ThemeProvider from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
   title: "Triangles",
@@ -19,7 +20,12 @@ export default function RootLayout({
           content="0NJhd1AKbFYkmygwh26W1tjN-EdJZKdxgtrNYIFLyqw"
         />
       </head>
-      <body>{children}</body>
+
+      <body>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
